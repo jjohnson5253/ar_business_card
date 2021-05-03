@@ -1,8 +1,6 @@
 //
-//  AppDelegate.swift
-//  mtg_ar
-//
-//  Created by Jake on 4/19/21.
+//  Created by Jake Johnson
+//  Credits to https://github.com/Rightpoint/ARKit-CoreML
 //
 import UIKit
 

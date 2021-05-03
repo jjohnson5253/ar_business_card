@@ -1,7 +1,7 @@
 {
   "images" : [
     {
-      "filename" : "forest.jpg",
+      "filename" : "lindsay_card.jpg",
       "idiom" : "universal"
     }
   ],
@@ -10,6 +10,7 @@
     "version" : 1
   },
   "properties" : {
-    "width" : 0.063577712609970666
+    "unit" : "inches",
+    "width" : 2
   }
 }

@@ -1,23 +1,17 @@
 //
-//  ARSceneViewController.swift
-//  ARKitCoreML
+//  Created by Jake Johnson
+//  Credits to https://github.com/abdvl/ARKit-Card-Detection-and-Animation
+//  Credits to https://github.com/Rightpoint/ARKit-CoreML
 //
-//  Created by Jason Clark on 10/11/18.
-//  Copyright © 2018 Raizlabs. All rights reserved.
-//
+
 import ARKit
 import SceneKit
 import UIKit
 
 final class ARSceneViewController: UIViewController {
 
-    var diamondNode:SCNNode?
-    let diamondScene = SCNScene(named: "diamond.scn")
-    
-    lazy var recognizer = MLRecognizer(
-        model: LandCardClassifier().model,
-        sceneView: sceneView
-    )
+    var catNode:SCNNode?
+    let catScene = SCNScene(named: "cat.scn")
 
     let detectionImages = ARReferenceImage.referenceImages(
         inGroupNamed: "AR Resources",
@@ -29,12 +23,6 @@ final class ARSceneViewController: UIViewController {
         sceneView.delegate = self
         return sceneView
     }()
-
-    lazy var refreshButton = UIBarButtonItem(
-        barButtonSystemItem: .refresh,
-        target: self, action: #selector(refreshButtonPressed)
-    )
-
 }
 
 extension ARSceneViewController {
@@ -42,10 +30,9 @@ extension ARSceneViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        diamondNode = diamondScene?.rootNode
+        catNode = catScene?.rootNode
 
-        title = "ARKit + CoreML"
-        navigationItem.rightBarButtonItem = refreshButton
+        title = "Very Business"
 
         view.addSubview(sceneView)
         NSLayoutConstraint.activate([
@@ -74,42 +61,13 @@ extension ARSceneViewController {
 extension ARSceneViewController: ARSCNViewDelegate {
 
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        guard let imageAnchor = anchor as? ARImageAnchor else { return }
-
-        addIndicatorPlane(to: imageAnchor)
-
-        // send off anchor to be screenshot and classified
-        recognizer.classify(imageAnchor: imageAnchor) { [weak self] result in
-            if case .success(let classification) = result {
-
-                // update app with classification
-                self?.attachLabel(classification, to: node)
-            }
-        }
-        
-        if let imageAnchor = anchor as? ARImageAnchor {
-            let size = imageAnchor.referenceImage.physicalSize
-            let plane = SCNPlane(width: size.width, height: size.height)
-            plane.firstMaterial?.diffuse.contents = UIColor.white.withAlphaComponent(0.5)
-            plane.cornerRadius = 0.005
-            let planeNode = SCNNode(geometry: plane)
-            planeNode.eulerAngles.x = -.pi/2
-            node.addChildNode(planeNode)
-            
-            
             var shapeNode:SCNNode?
             
-            shapeNode = diamondNode
+            shapeNode = catNode
             
             guard let shape = shapeNode else {return}
-            
-            
-            let shapeSpin = SCNAction.rotateBy(x: 0, y: 2 * .pi, z: 0, duration: 10)
-            let reapeatSpin = SCNAction.repeatForever(shapeSpin)
-            shapeNode?.runAction(reapeatSpin)
-            
+
             node.addChildNode(shape)
-        }
     }
 
 }
@@ -126,12 +84,7 @@ extension ARSceneViewController {
         plane.geometry?.firstMaterial?.fillMode = .lines
         plane.eulerAngles.x = -.pi / 2
         
-        /*var shapeNode:SCNNode?
-        shapeNode = diamondNode
-        guard let shape = shapeNode else {return}*/
-        
         node?.addChildNode(plane)
-        //node?.addChildNode(shape)
     }
 
     // Adds a label below `node`
@@ -146,14 +99,6 @@ extension ARSceneViewController {
         text.pivot.m41 = (box.max.x - box.min.x) / 2.0
         text.position.z = node.boundingBox.max.z + 0.012 // 1 cm below card
         node.addChildNode(text)
-    }
-
-}
-
-extension ARSceneViewController {
-
-    @objc func refreshButtonPressed() {
-        resetTracking()
     }
 
 }
